@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Parking Zone</title>
+    <style>
+      /* Define the styles for the dots */
+      .dot {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      
+      .green {
+        background-color: green;
+      }
+      
+      .red {
+        background-color: red;
+      }
+    </style>
+    <script>
+      function bookParking(dot) {
+        // Get the time period, date, vehicle type, and vehicle number from the user
+        var timePeriod = prompt('Enter the time period of parking (in hours):');
+        var date = prompt('Enter the date of parking (YYYY-MM-DD):');
+        var vehicleType = document.getElementById('vehicle-type').value;
+        var vehicleNumber = document.getElementById('vehicle-number').value;
+
+        // Update the dot to a red dot
+        dot.classList.remove('green');
+        dot.classList.add('red');
+
+        // Add the time period, date, vehicle type, and vehicle number as data attributes to the red dot
+        dot.dataset.timePeriod = timePeriod;
+        dot.dataset.date = date;
+        dot.dataset.vehicleType = vehicleType;
+        dot.dataset.vehicleNumber = vehicleNumber;
+
+        // Remove the onclick event listener from the red dot
+        dot.onclick = null;
+
+        // Add a click event listener to the red dot
+        dot.addEventListener('click', function(event) {
+          // Get the time period from the data attribute of the red dot
+          var timePeriod = dot.dataset.timePeriod;
+
+          // Display the time period to the user
+          alert('Time period: ' + timePeriod + ' hours');
+        });
+      }
+    </script>
+    <script>
+        function showParkingDetails(dot) {
+          // Get the time period, date, vehicle type, and vehicle number from the data attributes of the red dot
+          var timePeriod = dot.dataset.timePeriod;
+          var date = dot.dataset.date;
+          var vehicleType = dot.dataset.vehicleType;
+          var vehicleNumber = dot.dataset.vehicleNumber;
+      
+          // Display the parking details to the user
+          alert('Time period: ' + timePeriod + ' hours\n' +
+                'Date: ' + date + '\n' +
+                'Vehicle Type: ' + vehicleType + '\n' +
+                'Vehicle Number: ' + vehicleNumber);
+        }
+      
+        function bookParking(dot) {
+          // Get the time period, date, vehicle type, and vehicle number from the user
+          var timePeriod = prompt('Enter the time period of parking (in hours):');
+          var date = prompt('Enter the date of parking (YYYY-MM-DD):');
+          var vehicleType = document.getElementById('vehicle-type').value;
+          var vehicleNumber = document.getElementById('vehicle-number').value;
+      
+          // Update the dot to a red dot
+          dot.classList.remove('green');
+          dot.classList.add('red');
+      
+          // Add the time period, date, vehicle type, and vehicle number as data attributes to the red dot
+          dot.dataset.timePeriod = timePeriod;
+          dot.dataset.date = date;
+          dot.dataset.vehicleType = vehicleType;
+          dot.dataset.vehicleNumber = vehicleNumber;
+      
+          // Remove the onclick event listener from the red dot
+          dot.onclick = null;
+      
+          // Add a click event listener to the red dot to show the parking details
+          dot.addEventListener('click', function(event) {
+            showParkingDetails(dot);
+          });
+      
+          // Send an AJAX request to the server to store the parking details in the database
+          $.ajax({
+            url: 'store_parking.php',
+            method: 'POST',
+            data: {
+              x: dot.style.left.replace('px', ''),
+              y: dot.style.top.replace('px', ''),
+              time_period: timePeriod,
+              date: date,
+              vehicle_type: vehicleType,
+              vehicle_number: vehicleNumber
+            },
+            success: function(response) {
+              console.log(response);
+            },
+            error: function(error) {
+              console.log(error);
+            }
+          });
+        }
+      
+        // Get the image element
+        var parkingZone = document.getElementsByTagName('img')[0];
+      
+        // Add a click event listener to the image element
+        parkingZone.addEventListener('click', function(event) {
+          // Get the x and y coordinates of the click
+          var x = event.offsetX;
+          var y = event.offsetY;
+      
+          // Create a green dot at the x and y coordinates
+          var dot = document.createElement('div');
+          dot.classList.add('dot', 'green');
+          dot.style.left = x + 'px';
+          dot.style.top = y + 'px';
+          dot.onclick = function() {
+            bookParking(dot);
+          };
+          parkingZone.parentElement.appendChild(dot);
+        });
+      </script>      
+  </head>
+  <body>
+    <img src="parking-lot-spaces.png" alt="Parking Zone">
+    <br>
+    <label for="vehicle-type">Vehicle Type:</label>
+    <input type="text" id="vehicle-type" name="vehicle-type">
+    <br>
+    <label for="vehicle-number">Vehicle Number:</label>
+    <input type="text" id="vehicle-number" name="vehicle-number">
+    <script>
+      // Get the image element
+      var parkingZone = document.querySelector('img');
+
+      // Add a click event listener to the image element
+      parkingZone.addEventListener('click', function(event) {
+        // Get the X and Y coordinates of the click event
+        var x = event.offsetX;
+        var y = event.offsetY;
+
+        // Create a new element for the green dot
+        var greenDot = document.createElement('div');
+        greenDot.classList.add('dot');
+        greenDot.classList.add('green');
+        greenDot.style.left = x + 'px';
+        greenDot.style.top = y + 'px';
+
+        // Add the green dot to the parking zone
+        parkingZone.parentElement.appendChild(greenDot);
+
+        // Add an onclick event listener to the green dot
+        greenDot.onclick = function() {
+          bookParking(greenDot);
+        };
+      });
+    </script>
+  </body>
+</html>
